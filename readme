@@ -1,0 +1,36 @@
+
+Công nghệ sử dụng:
+	- Nodejs
+	- Typescript
+	- Redis
+	- Postgres (Database)
+	- Swagger
+
+
+1.Cài đặt docker 
+ Đối với Window:https://www.docker.com/products/docker-desktop/
+ Đối với Ubuntu:https://docs.docker.com/desktop/install/ubuntu/
+ 
+2.Cài đặt nodejs
+ Đối với window:https://nodejs.org/en/download/
+ Đối với Ubuntu:
+ 	sudo apt update
+ 	sudo apt install nodejs
+ 
+ 3.Cài đặt docker compose (để chạy các container nhanh hơn)
+ 	https://docs.docker.com/compose/install/
+ 
+ 4.Trỏ vào thư mục folder chính của backend chạy lệnh
+ 	docker-compose up --build
+ 
+ 5.Để stop tiến trình gõ lệnh:
+ 	docker-compose down
+ 
+ 6 Thông tin của các tiến trình khi chạy:
+ 	- Sever chạy cổng 3002
+ 	- Redis chạy cổng 6379
+ 	- Database:
+ 		username:travelapp
+ 		password:12345aA@
+ 		database:blog_am_thuc
+ 		port:5432

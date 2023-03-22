@@ -5,7 +5,7 @@ import { AUTH_METHOD } from "@common/enum";
 interface SignUpPayload extends Omit<User, "id"> {}
 export class UserDao extends BaseDao {
   constructor(client: Client) {
-    super(client, "user");
+    super(client, "users");
     this.signUp = this.signUp.bind(this);
     this.getUserByEmailAndMethod = this.getUserByEmailAndMethod.bind(this);
   }
@@ -20,5 +20,11 @@ export class UserDao extends BaseDao {
       values: [email, method],
     };
     return this.getClient().query(query);
+  }
+  public deleteUser(id_actor: string, id_user: string) {
+    return this.getClient().query(
+      `DELETE FROM ${this.tableName} WHERE users.id = $1 AND users.id <> $2`,
+      [id_user, id_actor]
+    );
   }
 }

@@ -8,3 +8,27 @@ export enum AUTH_METHOD {
   GOOGLE = "GOOGLE",
   PASSWORD = "PASSWORD",
 }
+
+export enum DEL_FLAG {
+  EXIST = 1,
+  DELETED = 0,
+}
+
+export enum POST_STATUS {
+  UNAPPROVED = "UNAPPROVED",
+  APPROVED = "APPROVED",
+  BLOCKED = "BLOCKED",
+}
+
+export enum REACTION_TYPE {
+  LIKE = "LIKE",
+  ANGRY = "ANGRY",
+  SAD = "SAD",
+  WOW = "WOW",
+  LAUGH = "LAUGH",
+  HEART = "HEART",
+}
+export enum ORDER_BY {
+  CREATE_AT = "CREATE_AT",
+  VIEW = "VIEW",
+}

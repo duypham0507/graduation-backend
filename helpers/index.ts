@@ -1,9 +1,11 @@
 import { DB_ERROR_MESSAGES, UPLOAD_FOLDER } from "@common/constants";
 import { Key_And_Value } from "@daos/BaseDao";
 import { DBError } from "@models/DBError";
-import { NextFunction, Response } from "express";
+import { NextFunction, Response, Request } from "express";
 import { DatabaseError } from "pg";
 import { inspect } from "util";
+import { parse } from "node-html-parser";
+var url = require("url");
 
 export const jsonResponse = (
   res: Response,
@@ -65,4 +67,86 @@ export function get(obj: any, path: string) {
 
 export const getFileName = (file: Express.Multer.File) => {
   return `/${UPLOAD_FOLDER}/${file.filename}`;
+};
+
+export function fullUrl(req: Request, pathname?: string) {
+  return url.format({
+    protocol: req.protocol,
+    host: req.get("host"),
+    pathname: pathname || req.originalUrl,
+  });
+}
+export const convertToBulkInsert = (
+  payload: Array<any>,
+  fields: Array<string>
+) => {
+  const data: Array<{
+    key: string;
+    value: Array<any>;
+  }> = [];
+  payload.forEach((v) => {
+    fields.forEach((field, index) => {
+      data[index]
+        ? data[index]["value"].push(v[field])
+        : (data[index] = {
+            key: field,
+            value: [v[field]],
+          });
+    });
+  });
+  return data;
+};
+
+const notNull = (value: any) => {
+  return value !== undefined && value !== null && !isNaN(value);
+};
+
+export const pagination = (
+  list: Array<any>,
+  limit?: number,
+  offset?: number
+) => {
+  return {
+    data:
+      notNull(offset) && notNull(limit)
+        ? list.slice(offset!, offset! + limit!)
+        : list,
+    metadata: {
+      total: list.length,
+      totalPage: notNull(limit) ? Math.ceil(list.length / limit!) : 1,
+      page:
+        notNull(limit) && notNull(offset)
+          ? Math.ceil(offset! / limit!) === 0
+            ? 1
+            : Math.floor(offset! / limit!) + 1
+          : 1,
+      limit: limit,
+      hasMore:
+        notNull(limit) && notNull(offset)
+          ? list.length > ((offset || 0) + 1)! * limit!
+          : false,
+    },
+  };
+};
+
+export function isInDesiredForm(str: any) {
+  var n = Math.floor(Number(str));
+  return n !== Infinity && String(n) === str && n >= 0;
+}
+
+export function getImageSrcFromHTML(html: string): Maybe<string> {
+  const root = parse(html);
+  const image = root.querySelector("img");
+  return (
+    image?.rawAttrs.replace("src=", "").replace(/(^\"+|\"+$)/gm, "") || null
+  );
+}
+
+export const wrapperAsync = async (asyncFunc: Promise<any>) => {
+  try {
+    const rs = await asyncFunc;
+    return [rs, null];
+  } catch (e) {
+    return [null, e];
+  }
 };

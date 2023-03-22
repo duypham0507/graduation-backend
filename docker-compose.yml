@@ -1,0 +1,54 @@
+version: '3'
+services:
+  db:
+    container_name: travel-app-db
+    image: postgres
+    networks:
+      - travel-app-network
+    ports:
+      - "5999:5432"
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - ./db_data:/var/lib/postgresql/data
+    env_file:
+      - ./.envDb
+
+  cache:
+    container_name: travel-app-cache
+    image: redis
+    ports:
+      - "6379:6379"
+    networks:
+      - travel-app-network
+
+  travel-app-backend:
+    container_name: travel-app-backend
+    networks:
+      - travel-app-network
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    image: travel-app-backend
+    depends_on:
+      - db
+      - cache
+    ports:
+      - "3002:3002"
+    volumes:
+      - ./uploads:/travel-app-backend/uploads
+    # network_mode: ""
+
+  commander:
+    container_name: travel-app-redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOST=travel-app-cache
+    ports:
+      - "8081:8081"
+    networks:
+      - travel-app-network
+
+networks:
+  travel-app-network:
+    driver: bridge
